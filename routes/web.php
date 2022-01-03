@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use \Illuminate\Support\Facades\Mail;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,10 +15,26 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('bem-vindo');
 });
 
-Auth::routes();
+Auth::routes(['verify' => true]);
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::resource('tarefa', 'App\Http\Controllers\TarefaController');
+/*
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])
+    ->name('home')
+    ->middleware('verified');
+*/
+
+Route::get('tarefa/exportacao/{extensao}', 'App\Http\Controllers\TarefaController@exportacao')
+->name('tarefa.exportacao');
+Route::get('tarefa/exportar', 'App\Http\Controllers\TarefaController@exportar')
+->name('tarefa.exportar');
+Route::resource('tarefa', 'App\Http\Controllers\TarefaController')
+    ->middleware('verified');
+
+Route::get('mensagem-teste', function(){
+    return new \App\Mail\MensagemTesteMail();
+    //Mail::to('cesarsilvasb@gmail.com')->send(new \App\Mail\MensagemTesteMail());
+    //return 'E-mail enviado com sucesso!';
+});
